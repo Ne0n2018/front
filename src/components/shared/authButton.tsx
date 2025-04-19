@@ -26,13 +26,10 @@ export default function AuthButton() {
     try {
       setError("");
       await login(email, password);
-      console.log("Login successful, user should redirect");
     } catch (err) {
       setError(err.message || "Invalid email or password");
     }
   };
-  console.log(user);
-  // Если пользователь авторизован, показываем кнопку выхода
   if (user) {
     return (
       <Button variant="outline" onClick={logout}>
