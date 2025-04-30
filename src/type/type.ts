@@ -9,6 +9,7 @@ export interface User {
   email: string;
   name: string;
   role: Role;
+  teacher?: Teacher;
 }
 
 export interface Review {
@@ -42,4 +43,19 @@ export interface Booking {
   date: string;
   comment?: string;
   status: "PENDING" | "CONFIRMED" | "CANCELLED";
+}
+
+export interface TeacherFormData {
+  name: string;
+  email: string;
+  subjects: (
+    | "MATH"
+    | "ENGLISH"
+    | "PHYSICS"
+    | "BIOLOGY"
+    | "GEOGRAPHY"
+    | "RUSSIAN"
+  )[];
+  hourlyRate: number;
+  description: string;
 }

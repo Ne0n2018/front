@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Teacher } from "@/type/type";
-import ProtectedRoute from "@/components/shared/teacher-profile/protected-route";
 import TeacherInfoSummary from "@/components/shared/teacher-profile/teacher-profile";
 import BookingForm from "@/components/shared/teacher-booking/BookingForm";
 import BookingConfirmation from "@/components/shared/teacher-booking/BookingConfirmation";
@@ -58,27 +57,25 @@ export default function TeacherBookingPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Бронирование урока</h1>
-        {bookingId && bookingDate ? (
-          <BookingConfirmation
-            bookingId={bookingId}
-            teacherName={teacher.user.name}
-            date={bookingDate}
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">Бронирование урока</h1>
+      {bookingId && bookingDate ? (
+        <BookingConfirmation
+          bookingId={bookingId}
+          teacherName={teacher.user.name}
+          date={bookingDate}
+        />
+      ) : (
+        <div className="space-y-6">
+          <TeacherInfoSummary teacher={teacher} />
+          <BookingForm
+            teacherId={teacher.id}
+            onBookingSuccess={(newBookingId) =>
+              handleBookingSuccess(newBookingId, teacher.selectedDate!)
+            }
           />
-        ) : (
-          <div className="space-y-6">
-            <TeacherInfoSummary teacher={teacher} />
-            <BookingForm
-              teacherId={teacher.id}
-              onBookingSuccess={(newBookingId) =>
-                handleBookingSuccess(newBookingId, teacher.selectedDate!)
-              }
-            />
-          </div>
-        )}
-      </div>
-    </ProtectedRoute>
+        </div>
+      )}
+    </div>
   );
 }

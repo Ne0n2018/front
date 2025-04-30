@@ -1,38 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserPlus } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { Role } from "@/type/type";
-import Link from "next/link";
 import { useRoleBasedRedirect } from "@/hooks/useRedirect";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [role, setRole] = useState<Role>(Role.USER);
   const [error, setError] = useState("");
-  const { register, user } = useAuth();
+  const { user, login } = useAuth();
+  const router = useRouter();
   useRoleBasedRedirect(user);
+  // Перенаправление, если пользователь уже авторизован
+  useEffect(() => {
+    if (user) {
+      console.log("User is logged in, redirecting to dashboard:", user);
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register(email, password, name, role);
+      setError("");
+      await login(email, password);
     } catch (err) {
-      setError(`Registration failed ${err}`);
+      setError(err.message || "Invalid email or password");
     }
   };
 
@@ -41,23 +40,13 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <UserPlus className="w-6 h-6" />
-            Register
+            <LogIn className="w-6 h-6" />
+            Login
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && <p className="text-red-500">{error}</p>}
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
             <div>
               <Label htmlFor="email">Email</Label>
               <Input
@@ -78,27 +67,15 @@ export default function RegisterPage() {
                 required
               />
             </div>
-            <div>
-              <Label htmlFor="role">Role</Label>
-              <Select
-                onValueChange={(value) => setRole(value as Role)}
-                defaultValue={Role.USER}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={Role.USER}>User</SelectItem>
-                  <SelectItem value={Role.TEACHER}>Teacher</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
             <Button type="submit" className="w-full">
-              Register
+              Login
             </Button>
           </form>
           <p className="mt-4 text-center">
-            У вас уже есть? <Link href={"/"}>Войти</Link>
+            Don&apos;t have an account?{" "}
+            <a href="/register" className="text-blue-500 hover:underline">
+              Register
+            </a>
           </p>
         </CardContent>
       </Card>
